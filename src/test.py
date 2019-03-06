@@ -1,7 +1,8 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 import urllib.request
-
+from sklearn.semi_supervised import LabelPropagation
+from sklearn import metrics
 
 # specific categories for testing (faster load time)
 categories = ['alt.atheism', 'talk.religion.misc',
@@ -12,6 +13,9 @@ newsgroups_train = fetch_20newsgroups(subset='train',
                                       remove=('headers', 'footers'),
                                       categories=categories)
 
+newsgroups_test = fetch_20newsgroups(subset='test',
+                                     remove=('headers', 'footers'),
+                                     categories=categories)
 
 # get stopwords from file
 def get_stopwords():
@@ -25,6 +29,9 @@ def get_stopwords():
 vectorizer = TfidfVectorizer(stop_words=get_stopwords())
 vectors = vectorizer.fit_transform(newsgroups_train.data)
 
-#print(vectors[0]) #Display first vector
-print(vectors.toarray()) #Display as vector
-print(len(vectorizer.get_feature_names())) #Display feature count
+# classification
+clf = LabelPropagation(kernel='rbf').fit(vectors.todense(), newsgroups_train.target)
+test_vec = vectorizer.transform(newsgroups_test.data)
+pred = clf.predict(test_vec)
+print(metrics.f1_score(newsgroups_test.target, pred, average='macro'))
+print(clf.score(test_vec, newsgroups_test.target))
