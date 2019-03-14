@@ -6,7 +6,7 @@ from sklearn import metrics
 import nltk
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-from classes.dataset import Dataset
+from src.classes.dataset import Dataset
 
 # specific categories for testing (faster load time)
 categories = ['alt.atheism', 'talk.religion.misc',
@@ -17,8 +17,6 @@ dataset = Dataset(categories)
 dataset.split(100)
 print('Traning rows: ', len(dataset.train['data']))
 print('Testing rows: ', len(dataset.test['data']))
-print(dataset.train['data'][1])
-
 
 # get stopwords from file
 def get_stopwords():
