@@ -34,7 +34,7 @@ def get_wordnet_pos(word):
 def lemmatize_newsgroup():
     i = 0
     time_before = time.time()
-    with open('newsgroups_train.txt', 'w') as f:
+    with open('../assets/newsgroups_train.txt', 'w') as f:
         while i < len(newsgroups_train.data):
             newsgroups_train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
                                                   nltk.word_tokenize(newsgroups_train.data[i]) if w not in
@@ -43,7 +43,7 @@ def lemmatize_newsgroup():
             f.write("%s\n" % newsgroups_train.data[i])
             i += 1
     i = 0
-    with open('newsgroups_test.txt', 'w') as f:
+    with open('../assets/newsgroups_test.txt', 'w') as f:
         while i < len(newsgroups_test.data):
             newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
                                                  nltk.word_tokenize(newsgroups_test.data[i]) if w not in
@@ -56,12 +56,12 @@ def lemmatize_newsgroup():
 
 
 def load_improved_newsgroup():
-    lines = [line.rstrip('\n') for line in open('newsgroups_train.txt')]
+    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_train.txt')]
     i = 0
     while i < len(lines):
         newsgroups_train.data[i] = lines[i]
         i += 1
-    lines = [line.rstrip('\n') for line in open('newsgroups_test.txt')]
+    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_test.txt')]
     i = 0
     while i < len(lines):
         newsgroups_test.data[i] = lines[i]

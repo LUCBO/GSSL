@@ -1,6 +1,7 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.model_selection import train_test_split
 
+
 class Dataset:
     def __init__(self, categories=None):
         self.categories = fetch_20newsgroups(subset='train', categories=categories).target_names  # List of categories in dataset
