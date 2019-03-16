@@ -33,7 +33,7 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test):
             newsgroups_train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
                                                   nltk.word_tokenize(newsgroups_train.data[i]) if w not in
                                                   string.punctuation]))
-            f.write("%s\n" % newsgroups_train.data[i])
+            f.write("%s\n" % newsgroups_train.data[i].encode("utf-8"))
             i += 1
             print("Training data: ", i, "/", size)
     i = 0
@@ -44,7 +44,7 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test):
             newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
                                                  nltk.word_tokenize(newsgroups_test.data[i]) if w not in
                                                  string.punctuation]))
-            f.write("%s\n" % newsgroups_test.data[i])
+            f.write("%s\n" % newsgroups_test.data[i].encode("utf-8"))
             i += 1
             print("Test data: ", i, "/", size)
     print("Lemmatization finished")
@@ -58,7 +58,8 @@ def load_improved_newsgroup(newsgroups_train, newsgroups_test):
     print("Training data is loading...")
     print("Training data: ", i, "/", size)
     while i < len(lines):
-        newsgroups_train.data[i] = lines[i]
+        length = len(lines[i])
+        newsgroups_train.data[i] = lines[i][1:length]  # Removes the b
         i += 1
         print("Training data: ", i, "/", size)
     lines = [line.rstrip('\n') for line in open('../assets/newsgroups_test.txt')]
@@ -67,7 +68,8 @@ def load_improved_newsgroup(newsgroups_train, newsgroups_test):
     print("Test data is loading...")
     print("Training data: ", i, "/", size)
     while i < len(lines):
-        newsgroups_test.data[i] = lines[i]
+        length = len(lines[i])
+        newsgroups_test.data[i] = lines[i][1:length]  # Removes the b
         i += 1
         print("Training data: ", i, "/", size)
     print("All data is loaded")
