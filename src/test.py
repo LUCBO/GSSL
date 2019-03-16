@@ -6,7 +6,7 @@ from sklearn import metrics
 import nltk
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-from src.classes.dataset import Dataset
+from src.main.dataset import Dataset
 
 # specific categories for testing (faster load time)
 categories = ['alt.atheism', 'talk.religion.misc',

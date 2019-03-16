@@ -1,4 +1,4 @@
-from src.classes.dataset import Dataset
+from src.main.dataset import Dataset
 
 dataset = Dataset(['alt.atheism', 'talk.religion.misc'])
 dataset.split(5, shuffle=False)

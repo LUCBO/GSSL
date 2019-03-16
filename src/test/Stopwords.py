@@ -19,7 +19,7 @@ newsgroups_test = fetch_20newsgroups(subset='test',
 
 # get stopwords from file
 def get_stopwords():
-    f = open('stopwords.txt')  #https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
+    f = open('../assets/stopwords.txt')  #https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
     x = f.read().split("\n")
     f.close()
     return x
@@ -28,7 +28,7 @@ def get_stopwords():
 def remove_regex_words():
     i = 0
     print([newsgroups_train.data[0]])
-    with open('stopwords_regex.txt', 'r') as f:
+    with open('../assets/stopwords_regex.txt', 'r') as f:
         words = f.read().split("\n")
         while i < len(words):
             j = 0
