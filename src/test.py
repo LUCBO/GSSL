@@ -1,14 +1,34 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.semi_supervised import LabelPropagation
 from sklearn import metrics
-from classes.dataset import Dataset
+from src.classes.dataset import Dataset
+import src.functions.Preprocess
 
 # specific categories for testing (faster load time)
-categories = ['alt.atheism', 'talk.religion.misc',
-              'comp.graphics', 'sci.space']
+categories = ['alt.atheism',
+              'comp.graphics',
+              'comp.os.ms-windows.misc',
+              'comp.sys.ibm.pc.hardware',
+              'comp.sys.mac.hardware',
+              'comp.windows.x',
+              'misc.forsale',
+              'rec.autos',
+              'rec.motorcycles',
+              'rec.sport.baseball',
+              'rec.sport.hockey',
+              'sci.crypt',
+              'sci.electronics',
+              'sci.med',
+              'sci.space',
+              'soc.religion.christian',
+              'talk.politics.guns',
+              'talk.politics.mideast',
+              'talk.politics.misc',
+              'talk.religion.misc']
 
 # initialize dataset
 dataset = Dataset(categories)
+src.functions.Preprocess.load_improved_newsgroup(dataset.train, dataset.test)  # Only thing needed other times
 dataset.split_train(100)
 
 # feature extraction

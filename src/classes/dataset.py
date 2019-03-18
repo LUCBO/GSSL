@@ -5,14 +5,16 @@ import random
 class Dataset:
     def __init__(self, categories=None):
 
-        train_20newsgroups = fetch_20newsgroups(subset='train', remove=('headers', 'footers', 'quotes'), categories=categories)
+        train_20newsgroups = fetch_20newsgroups(subset='train', remove=('headers', 'footers', 'quotes')
+                                                , categories=categories)
         self.train = {  # Labeled and unlabeled dataset
             'data': train_20newsgroups.data,
             'target': train_20newsgroups.target,
             'target_names': train_20newsgroups.target_names
         }
 
-        test_20newsgroups = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes'), categories=categories)
+        test_20newsgroups = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes')
+                                               , categories=categories)
         self.test = {
             'data': test_20newsgroups.data,
             'target': test_20newsgroups.target,

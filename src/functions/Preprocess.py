@@ -52,26 +52,26 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test):
 
 # loads newsgroups from files
 def load_improved_newsgroup(newsgroups_train, newsgroups_test):
-    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_train.txt')]
+    lines = [line.rstrip('\n') for line in open('./assets/newsgroups_train.txt')]
     i = 0
     size = len(lines)
     print("Training data is loading...")
     print("Training data: ", i, "/", size)
     while i < len(lines):
         length = len(lines[i])
-        newsgroups_train.data[i] = lines[i][1:length]  # Removes the b
+        newsgroups_train['data'][i] = lines[i][1:length]  # Removes the b
         i += 1
         print("Training data: ", i, "/", size)
-    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_test.txt')]
+    lines = [line.rstrip('\n') for line in open('./assets/newsgroups_test.txt')]
     i = 0
     size = len(lines)
     print("Test data is loading...")
-    print("Training data: ", i, "/", size)
+    print("Test data: ", i, "/", size)
     while i < len(lines):
         length = len(lines[i])
-        newsgroups_test.data[i] = lines[i][1:length]  # Removes the b
+        newsgroups_test['data'][i] = lines[i][1:length]  # Removes the b
         i += 1
-        print("Training data: ", i, "/", size)
+        print("Test data: ", i, "/", size)
     print("All data is loaded")
 
 

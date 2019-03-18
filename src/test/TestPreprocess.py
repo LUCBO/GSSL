@@ -1,5 +1,6 @@
 import src.functions.Preprocess
 from sklearn.datasets import fetch_20newsgroups
+from src.classes.dataset import Dataset
 
 categories = ['alt.atheism']
 
@@ -20,6 +21,7 @@ newsgroups_test = fetch_20newsgroups(subset='test',
                                      remove=('headers', 'footers', 'quotes'),
                                      )
 
-src.functions.Preprocess.load_improved_newsgroup(newsgroups_train, newsgroups_test)  # Only thing needed other times
+dataset = Dataset(categories)
+src.functions.Preprocess.load_improved_newsgroup(dataset.train, dataset.test)  # Only thing needed other times
 print(before)
-print([newsgroups_train.data[0]])
+print([dataset.train['data'][0]])
