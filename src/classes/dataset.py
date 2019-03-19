@@ -3,15 +3,17 @@ import random
 
 
 class Dataset:
-    def __init__(self, categories=None):
-
-        train_20newsgroups = fetch_20newsgroups(subset='train', remove=('headers', 'footers', 'quotes')
-                                                , categories=categories)
-        self.train = {  # Labeled and unlabeled dataset
-            'data': train_20newsgroups.data,
-            'target': train_20newsgroups.target,
-            'target_names': train_20newsgroups.target_names
+    def __init__(self, categories=None, preprocessed=True):
+        self.train = {
+            'data': [],
+            'target': [],
+            'target_names': []
         }
+
+        if preprocessed:
+            self.load_preprocessed(categories)
+        else:
+            self.load_original(categories)
 
         test_20newsgroups = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes')
                                                , categories=categories)
@@ -79,3 +81,32 @@ class Dataset:
             'target': y,
             'target_names': dataset['target_names']
         }
+
+    def load_preprocessed(self, categories):
+        print('Loading preprocessed dataset..')
+
+        for i, category in enumerate(categories):
+            file = open('assets/20newsgroups/train/newsgroups_train_' + category + '.txt')
+            lines = [line.rstrip('\n') for line in file]
+
+            self.train['data'].extend(lines)
+            self.train['target'] += [i] * len(lines)
+            self.train['target_names'].append(category)
+
+        print('Load completed!')
+
+    def load_original(self, categories):
+        print('Loading original dataset..')
+
+        train_20newsgroups = fetch_20newsgroups(subset='train',
+                                                remove=('headers', 'footers', 'quotes'),
+                                                categories=categories)
+
+        self.train = {
+            'data': train_20newsgroups.data,
+            'target': train_20newsgroups.target,
+            'target_names': train_20newsgroups.target_names
+        }
+
+        print('Load completed!')
+
