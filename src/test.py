@@ -2,6 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.semi_supervised import LabelPropagation
 from sklearn import metrics
 from src.classes.dataset import Dataset
+from functions.Preprocess import get_stopwords
 import src.functions.Preprocess
 
 # specific categories for testing (faster load time)
@@ -32,7 +33,7 @@ src.functions.Preprocess.load_improved_newsgroup(dataset.train, dataset.test)  #
 dataset.split_train(100)
 
 # feature extraction
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
 vectors = vectorizer.fit_transform(dataset.train['data'])
 
 # classification

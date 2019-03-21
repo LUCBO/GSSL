@@ -104,7 +104,7 @@ def load_improved_newsgroup_test(newsgroups_test):
 
 # get stopwords from file
 def get_stopwords():
-    f = open('../assets/stopwords.txt')  # https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
+    f = open('assets/stopwords.txt')  # https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
     x = f.read().split("\n")
     f.close()
     return x
