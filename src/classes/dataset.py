@@ -10,18 +10,16 @@ class Dataset:
             'target_names': []
         }
 
+        self.test = {
+            'data': [],
+            'target': [],
+            'target_names': []
+        }
+
         if preprocessed:
             self.load_preprocessed(categories)
         else:
             self.load_original(categories)
-
-        test_20newsgroups = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes')
-                                               , categories=categories)
-        self.test = {
-            'data': test_20newsgroups.data,
-            'target': test_20newsgroups.target,
-            'target_names': test_20newsgroups.target_names
-        }
 
     def split_train(self, category_size, shuffle=True):
         """
@@ -85,6 +83,7 @@ class Dataset:
     def load_preprocessed(self, categories):
         print('Loading preprocessed dataset..')
 
+        # Load training dataset
         for i, category in enumerate(categories):
             file = open('assets/20newsgroups/train/newsgroups_train_' + category + '.txt')
             lines = [line.rstrip('\n') for line in file]
@@ -92,6 +91,17 @@ class Dataset:
             self.train['data'].extend(lines)
             self.train['target'] += [i] * len(lines)
             self.train['target_names'].append(category)
+            file.close()
+
+        # Load testing dataset
+        for i, category in enumerate(categories):
+            file = open('assets/20newsgroups/test/newsgroups_test_' + category + '.txt')
+            lines = [line.rstrip('\n') for line in file]
+
+            self.test['data'].extend(lines)
+            self.test['target'] += [i] * len(lines)
+            self.test['target_names'].append(category)
+            file.close()
 
         print('Load completed!')
 
@@ -101,8 +111,16 @@ class Dataset:
         train_20newsgroups = fetch_20newsgroups(subset='train',
                                                 remove=('headers', 'footers', 'quotes'),
                                                 categories=categories)
-
         self.train = {
+            'data': train_20newsgroups.data,
+            'target': train_20newsgroups.target,
+            'target_names': train_20newsgroups.target_names
+        }
+
+        train_20newsgroups = fetch_20newsgroups(subset='test',
+                                                remove=('headers', 'footers', 'quotes'),
+                                                categories=categories)
+        self.test = {
             'data': train_20newsgroups.data,
             'target': train_20newsgroups.target,
             'target_names': train_20newsgroups.target_names
