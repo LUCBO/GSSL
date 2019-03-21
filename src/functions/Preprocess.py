@@ -13,14 +13,12 @@ def process(categories):
         trainingdata = fetch_20newsgroups(subset='train',
                                           remove=('headers', 'footers', 'quotes'),
                                           categories=[categories[i]])
+        testdata = fetch_20newsgroups(subset='test',
+                                      remove=('headers', 'footers', 'quotes'),
+                                      categories=[categories[i]])
         remove_regex_words(trainingdata)
-        lemmatize_newsgroup_train(trainingdata, categories[i])
+        lemmatize_newsgroup(trainingdata, testdata, categories[i])
         i += 1
-    testdata = fetch_20newsgroups(subset='test',
-                                  remove=('headers', 'footers', 'quotes'),
-                                  categories=categories)
-    remove_regex_words(testdata)
-    lemmatize_newsgroup_test(testdata)
 
 
 # Determines how a word shall change to convert it to its base form
@@ -33,8 +31,8 @@ def get_wordnet_pos(word):
     return tag_dict.get(tag, wordnet.NOUN)
 
 
-# Lemmatize newsgroups training documents
-def lemmatize_newsgroup_train(newsgroups_train, category):
+# Lemmatize and prints newsgroups documents to file
+def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
     i = 0
     lemmatizer = WordNetLemmatizer()
     size = len(newsgroups_train.data)
@@ -49,17 +47,10 @@ def lemmatize_newsgroup_train(newsgroups_train, category):
             f.write("%s\n" % newsgroups_train.data[i].encode("utf-8"))
             i += 1
             print(category + " training data: ", i, "/", size)
-    print("Lemmatization finished")
-
-
-# Lemmatize newsgroups test documents
-def lemmatize_newsgroup_test(newsgroups_test):
-    lemmatizer = WordNetLemmatizer()
-    i = 0
-    print("Lemmatization in progress...")
-    with open('../assets/newsgroups_test.txt', 'w') as f:
+    with open('../assets/20newsgroups/test/newsgroups_test_' + category + '.txt', 'w') as f:
         size = len(newsgroups_test.data)
-        print("Test data: ", i, "/", size)
+        i = 0
+        print(category + " test data: ", i, "/", size)
         while i < len(newsgroups_test.data):
             newsgroups_test.data[i] = newsgroups_test.data[i].lower()
             newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
@@ -67,7 +58,7 @@ def lemmatize_newsgroup_test(newsgroups_test):
                                                  string.punctuation]))
             f.write("%s\n" % newsgroups_test.data[i].encode("utf-8"))
             i += 1
-            print("Test data: ", i, "/", size)
+            print(category + " test data: ", i, "/", size)
     print("Lemmatization finished")
 
 
@@ -88,17 +79,18 @@ def load_improved_newsgroup_train(newsgroups_train, category):
 
 
 # loads newsgroups test documents from files
-def load_improved_newsgroup_test(newsgroups_test):
-    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_test.txt')]
+def load_improved_newsgroup_test(newsgroups_test, category):
+    lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
+                                                + category + '.txt')]
     i = 0
     size = len(lines)
     print("Test data is loading...")
-    print("Test data: ", i, "/", size)
+    print(category + " test data: ", i, "/", size)
     while i < len(lines):
         length = len(lines[i])
         newsgroups_test['data'][i] = lines[i][1:length]  # Removes the b
         i += 1
-        print("Test data: ", i, "/", size)
+        print(category + " test data: ", i, "/", size)
     print("Test data is loaded")
 
 

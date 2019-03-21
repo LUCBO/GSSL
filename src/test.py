@@ -10,7 +10,8 @@ categories = ['alt.atheism',
               'comp.graphics',
               'comp.os.ms-windows.misc',
               'comp.sys.ibm.pc.hardware',
-              'comp.sys.mac.hardware',
+              'comp.sys.mac.hardware']
+"""
               'comp.windows.x',
               'misc.forsale',
               'rec.autos',
@@ -26,10 +27,11 @@ categories = ['alt.atheism',
               'talk.politics.mideast',
               'talk.politics.misc',
               'talk.religion.misc']
+"""
 
 # initialize dataset
 dataset = Dataset(categories)
-src.functions.Preprocess.load_improved_newsgroup(dataset.train, dataset.test)  # Only thing needed other times
+# src.functions.Preprocess.load_improved_newsgroup(dataset.train, dataset.test)  # Only thing needed other times
 dataset.split_train(100)
 
 # feature extraction
