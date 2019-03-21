@@ -30,18 +30,16 @@ newsgroups_train = fetch_20newsgroups(subset='train',
                                       categories=category)
 newsgroups_test = fetch_20newsgroups(subset='test',
                                      remove=('headers', 'footers', 'quotes'),
-                                     categories=categories)
+                                     categories=category)
 
 before = [newsgroups_train.data[0]]
 before_testdata = [newsgroups_test.data[0]]
-src.functions.Preprocess.process(categories)  # Only first time
-
-"""
+# src.functions.Preprocess.process(categories)  # Only first time
+src.functions.Preprocess.print_v2_docs(categories)
 dataset = Dataset(category)
-src.functions.Preprocess.load_improved_newsgroup_train(dataset.train, 'alt.atheism')  # Only thing needed other times
-src.functions.Preprocess.load_improved_newsgroup_test(newsgroups_test)
+dataset.load_preprocessed(['alt.atheism'])
 print(before)
 print([dataset.train['data'][0]])
 print(before_testdata)
-print([newsgroups_test.data[0]])
-"""
+print([dataset.test['data'][0]])
+
