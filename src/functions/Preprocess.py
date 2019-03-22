@@ -62,36 +62,38 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
     print("Lemmatization finished")
 
 
-# loads newsgroups from files
-def load_improved_newsgroup_train(newsgroups_train, category):
-    lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
-                                                + category + '.txt')]
+def print_v2_docs(categories):
     i = 0
-    size = len(lines)
-    print("Training data is loading...")
-    print(category + " training data: ", i, "/", size)
-    while i < len(lines):
-        length = len(lines[i])
-        newsgroups_train['data'][i] = lines[i][1:length]  # Removes the b
+    removed = 0
+    while i < len(categories):
+        with open('../assets/20newsgroups/test2/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            while j < len(lines):
+                lines[j] = lines[j].strip() + "\n"
+                size = len(lines[j])
+                if len(lines[j]) > 4:
+                    f.write(lines[j])
+                else:
+                    removed += 1
+                j += 1
+            f.close()
+        with open('../assets/20newsgroups/train2/newsgroups_train_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            while j < len(lines):
+                lines[j] = lines[j].strip() + "\n"
+                size = len(lines[j])
+                if len(lines[j]) > 4:
+                    f.write(lines[j])
+                else:
+                    removed += 1
+                j += 1
+            f.close()
         i += 1
-        print(category + " training data: ", i, "/", size)
-    print("Training data is loaded")
-
-
-# loads newsgroups test documents from files
-def load_improved_newsgroup_test(newsgroups_test, category):
-    lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
-                                                + category + '.txt')]
-    i = 0
-    size = len(lines)
-    print("Test data is loading...")
-    print(category + " test data: ", i, "/", size)
-    while i < len(lines):
-        length = len(lines[i])
-        newsgroups_test['data'][i] = lines[i][1:length]  # Removes the b
-        i += 1
-        print(category + " test data: ", i, "/", size)
-    print("Test data is loaded")
+    print("Removed:", removed)
 
 
 # get stopwords from file
