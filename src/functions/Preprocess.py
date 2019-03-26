@@ -65,15 +65,18 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
 def print_v2_docs(categories):
     i = 0
     removed = 0
+    underline = 0
     while i < len(categories):
         with open('../assets/20newsgroups/test2/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
             lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
                                                         + categories[i] + '.txt')]
             j = 0
             while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
                 lines[j] = lines[j].strip() + "\n"
                 size = len(lines[j])
-                if len(lines[j]) > 4:
+                lines[j] = lines[j][1:size]
+                if len(lines[j]) > 3:
                     f.write(lines[j])
                 else:
                     removed += 1
@@ -84,9 +87,11 @@ def print_v2_docs(categories):
                                                         + categories[i] + '.txt')]
             j = 0
             while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
                 lines[j] = lines[j].strip() + "\n"
                 size = len(lines[j])
-                if len(lines[j]) > 4:
+                lines[j] = lines[j][1:size]
+                if len(lines[j]) > 3:
                     f.write(lines[j])
                 else:
                     removed += 1
@@ -94,6 +99,7 @@ def print_v2_docs(categories):
             f.close()
         i += 1
     print("Removed:", removed)
+    print("Underline:", underline)
 
 
 # get stopwords from file

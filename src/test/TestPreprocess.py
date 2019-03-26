@@ -37,7 +37,6 @@ before_testdata = [newsgroups_test.data[0]]
 # src.functions.Preprocess.process(categories)  # Only first time
 src.functions.Preprocess.print_v2_docs(categories)
 dataset = Dataset(category)
-dataset.load_preprocessed(['alt.atheism'])
 print(before)
 print([dataset.train['data'][0]])
 print(before_testdata)
