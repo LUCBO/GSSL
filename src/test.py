@@ -3,6 +3,9 @@ from sklearn.semi_supervised import LabelPropagation
 from sklearn import metrics
 from src.classes.dataset import Dataset
 from src.functions.Preprocess import get_stopwords
+from src.functions.ConfusionMatrix import plot_confusion_matrix
+import numpy as np
+import matplotlib.pyplot as plt
 
 # specific categories for testing (faster load time)
 categories = ['alt.atheism',
@@ -48,3 +51,14 @@ for i, p in enumerate(pred):
 
 print('f1 score: ', metrics.f1_score(dataset.test['target'], pred, average='macro'))
 print('clf score: ', clf.score(test_vec, dataset.test['target']))
+
+np.set_printoptions(precision=2)
+# Plot non-normalized confusion matrix
+plot_confusion_matrix(dataset.test['target'], pred, classes=categories,
+                      title='Confusion matrix, without normalization')
+
+# Plot normalized confusion matrix
+plot_confusion_matrix(dataset.test['target'], pred, classes=categories, normalize=True,
+                      title='Normalized confusion matrix')
+
+plt.show()

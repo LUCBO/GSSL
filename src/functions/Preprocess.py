@@ -17,6 +17,7 @@ def process(categories):
                                       remove=('headers', 'footers', 'quotes'),
                                       categories=[categories[i]])
         remove_regex_words(trainingdata)
+        remove_regex_words(testdata)
         lemmatize_newsgroup(trainingdata, testdata, categories[i])
         i += 1
 
@@ -104,7 +105,7 @@ def print_v2_docs(categories):
 
 # get stopwords from file
 def get_stopwords():
-    f = open('assets/stopwords.txt')  # https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
+    f = open('./assets/stopwords.txt')  # https://github.com/suzanv/termprofiling/blob/master/stoplist.txt
     x = f.read().split("\n")
     f.close()
     return x
