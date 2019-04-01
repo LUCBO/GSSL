@@ -16,8 +16,8 @@ def process(categories):
         testdata = fetch_20newsgroups(subset='test',
                                       remove=('headers', 'footers', 'quotes'),
                                       categories=[categories[i]])
-        remove_regex_words(trainingdata)
-        remove_regex_words(testdata)
+        remove_stopwords(trainingdata)
+        remove_stopwords(testdata)
         lemmatize_newsgroup(trainingdata, testdata, categories[i])
         i += 1
 
@@ -109,6 +109,23 @@ def get_stopwords():
     x = f.read().split("\n")
     f.close()
     return x
+
+
+# removed stopwords from newsgroup
+def remove_stopwords(newsgroup):
+    print("Removal in progress...")
+    remove_regex_words(newsgroup)
+    i = 0
+    with open('../assets/stopwords.txt', 'r') as f:
+        words = f.read().split("\n")
+        while i < len(words):
+            j = 0
+            while j < len(newsgroup.data):
+                newsgroup.data[j] = re.sub(words[i], '', newsgroup.data[j])
+                j += 1
+            i += 1
+    f.close()
+    print("Stopwords removed")
 
 
 # remove stopwords with a ' using regex.

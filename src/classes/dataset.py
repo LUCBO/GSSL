@@ -64,6 +64,51 @@ class Dataset:
         else:
             self.train = dataset
 
+    def split_train_true(self, category_size, shuffle=True):
+        """
+        Split training dataset into labeled and unlabeled
+        :param category_size: Integer. Number of labeled documents per category
+        :param shuffle: Boolean. True will shuffle dataset after split
+        :return:
+        """
+        dataset = {
+            'data': [],
+            'target': [],
+            'target_names': self.train['target_names']
+        }
+        target_label = 0
+        for category in self.train['target_names']:
+            fetch_dataset = self.load_train_for_split(category, target_label)
+
+            # Pick random documents from category dataset into new train dataset
+            fetch_dataset_length = len(fetch_dataset)
+            for i in range(category_size):
+                indexes_left = (fetch_dataset_length - i) - 1
+                if indexes_left >= 0:
+                    random_index = random.randint(0, indexes_left)
+                    data = fetch_dataset[random_index][0]
+
+                    dataset['data'].append(data)
+                    dataset['target'].append(target_label)
+
+                    del fetch_dataset[random_index]
+                else:
+                    break
+
+            # Rest of category dataset goes into new test dataset
+            i = 0
+            while i < len(fetch_dataset):
+                dataset['data'].append(fetch_dataset[i][0])
+                dataset['target'] += [-1]  # Set -1 (unlabeled) on rest
+                i += 1
+
+            target_label += 1
+
+        if shuffle:
+            self.train = self.shuffle(dataset)
+        else:
+            self.train = dataset
+
     def shuffle(self, dataset):
         """
         Shuffle both data and targets
@@ -85,7 +130,7 @@ class Dataset:
 
         # Load training dataset
         for i, category in enumerate(categories):
-            file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
+            file = open('./assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
             lines = [line.rstrip('\n') for line in file]
 
             self.train['data'].extend(lines)
@@ -95,7 +140,7 @@ class Dataset:
 
         # Load testing dataset
         for i, category in enumerate(categories):
-            file = open('../assets/20newsgroups/test2/newsgroups_test_' + category + '.txt')
+            file = open('./assets/20newsgroups/test2/newsgroups_test_' + category + '.txt')
             lines = [line.rstrip('\n') for line in file]
 
             self.test['data'].extend(lines)
@@ -104,6 +149,18 @@ class Dataset:
             file.close()
 
         print('Load completed!')
+
+    def load_train_for_split(self, category, target):
+        file = open('./assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
+        lines = [line.rstrip('\n') for line in file]
+        newsgroup_train = []
+        i = 0
+
+        while i < len(lines):
+            newsgroup_train.append([lines[i], target, category])
+            i += 1
+        file.close()
+        return newsgroup_train
 
     def load_original(self, categories):
         print('Loading original dataset..')
