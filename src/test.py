@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.semi_supervised import LabelPropagation
+from sklearn.semi_supervised import LabelSpreading
 from sklearn import metrics
 from src.classes.dataset import Dataset
 from src.functions.Preprocess import get_stopwords
@@ -8,12 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specific categories for testing (faster load time)
+"""
 categories = ['alt.atheism',
               'comp.graphics',
               'comp.os.ms-windows.misc',
               'comp.sys.ibm.pc.hardware',
-              'comp.sys.mac.hardware']
-"""
+              'comp.sys.mac.hardware',
               'comp.windows.x',
               'misc.forsale',
               'rec.autos',
@@ -31,9 +32,14 @@ categories = ['alt.atheism',
               'talk.religion.misc']
 """
 
+categories = ['alt.atheism',
+              'comp.graphics',
+              'rec.autos',
+              'sci.space',
+              'talk.politics.guns']
+
 # initialize dataset
 dataset = Dataset(categories)
-# dataset.split_train(100)
 dataset.split_train_true(100)
 
 # feature extraction
@@ -41,25 +47,38 @@ vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
 vectors = vectorizer.fit_transform(dataset.train['data'])
 
 # classification
-clf = LabelPropagation(kernel='rbf').fit(vectors.todense(), dataset.train['target'])
+# use max_iter=10 when 20 categories
+# clf_rbf = LabelPropagation(kernel='rbf').fit(vectors.todense(), dataset.train['target'])
+clf_knn = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
 test_vec = vectorizer.transform(dataset.test['data'])
 
 print('----PREDICTIONS----')
-pred = clf.predict(test_vec.todense())
-print(len(pred))
-for i, p in enumerate(pred):
-    print(i, ': ', p)
+# pred_rbf = clf_rbf.predict(test_vec.todense())
+pred_knn = clf_knn.predict(test_vec.todense())
 
-print('f1 score: ', metrics.f1_score(dataset.test['target'], pred, average='macro'))
-print('clf score: ', clf.score(test_vec.todense(), dataset.test['target']))
+# print('f1 score rbf: ', metrics.f1_score(dataset.test['target'], pred_rbf, average='macro'))
+# print('clf score rbf: ', clf_rbf.score(test_vec.todense(), dataset.test['target']))
+print('f1 score knn: ', metrics.f1_score(dataset.test['target'], pred_knn, average='macro'))
+print('clf score knn: ', clf_knn.score(test_vec.todense(), dataset.test['target']))
 
 np.set_printoptions(precision=2)
+
+"""
 # Plot non-normalized confusion matrix
-plot_confusion_matrix(dataset.test['target'], pred, classes=categories,
-                      title='Confusion matrix, without normalization')
+plot_confusion_matrix(dataset.test['target'], pred_rbf, classes=categories,
+                      title='Confusion matrix (RBF), without normalization')
 
 # Plot normalized confusion matrix
-plot_confusion_matrix(dataset.test['target'], pred, classes=categories, normalize=True,
-                      title='Normalized confusion matrix')
+plot_confusion_matrix(dataset.test['target'], pred_rbf, classes=categories, normalize=True,
+                      title='Normalized confusion matrix (RBF)')
+plt.show()
+"""
 
+# Plot non-normalized confusion matrix
+plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories,
+                      title='Confusion matrix (KNN), without normalization')
+
+# Plot normalized confusion matrix
+plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories, normalize=True,
+                      title='Normalized confusion matrix (KNN)')
 plt.show()

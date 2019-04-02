@@ -16,9 +16,11 @@ def process(categories):
         testdata = fetch_20newsgroups(subset='test',
                                       remove=('headers', 'footers', 'quotes'),
                                       categories=[categories[i]])
+
+        lemmatize_newsgroup(trainingdata, testdata, categories[i])
         remove_stopwords(trainingdata)
         remove_stopwords(testdata)
-        lemmatize_newsgroup(trainingdata, testdata, categories[i])
+        print_docs(trainingdata, testdata, categories[i])
         i += 1
 
 
@@ -39,34 +41,48 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
     size = len(newsgroups_train.data)
     print("Lemmatization in progress...")
     print(category + " training data: ", i, "/", size)
+    while i < len(newsgroups_train.data):
+        newsgroups_train.data[i] = newsgroups_train.data[i].lower()
+        newsgroups_train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
+                                              nltk.word_tokenize(newsgroups_train.data[i]) if w not in
+                                              string.punctuation]))
+        i += 1
+        print(category + " training data: ", i, "/", size)
+    size = len(newsgroups_test.data)
+    i = 0
+    print(category + " test data: ", i, "/", size)
+    while i < len(newsgroups_test.data):
+        newsgroups_test.data[i] = newsgroups_test.data[i].lower()
+        newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
+                                             nltk.word_tokenize(newsgroups_test.data[i]) if w not in
+                                             string.punctuation]))
+        i += 1
+        print(category + " test data: ", i, "/", size)
+    print("Lemmatization finished")
+
+
+def print_docs(newsgroups_train, newsgroups_test, category):
+    i = 0
+    print("Printing docs...")
     with open('../assets/20newsgroups/train/newsgroups_train_' + category + '.txt', 'w') as f:
         while i < len(newsgroups_train.data):
-            newsgroups_train.data[i] = newsgroups_train.data[i].lower()
-            newsgroups_train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
-                                                  nltk.word_tokenize(newsgroups_train.data[i]) if w not in
-                                                  string.punctuation]))
             f.write("%s\n" % newsgroups_train.data[i].encode("utf-8"))
             i += 1
-            print(category + " training data: ", i, "/", size)
+        f.close()
+
+    i = 0
     with open('../assets/20newsgroups/test/newsgroups_test_' + category + '.txt', 'w') as f:
-        size = len(newsgroups_test.data)
-        i = 0
-        print(category + " test data: ", i, "/", size)
         while i < len(newsgroups_test.data):
-            newsgroups_test.data[i] = newsgroups_test.data[i].lower()
-            newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
-                                                 nltk.word_tokenize(newsgroups_test.data[i]) if w not in
-                                                 string.punctuation]))
             f.write("%s\n" % newsgroups_test.data[i].encode("utf-8"))
             i += 1
-            print(category + " test data: ", i, "/", size)
-    print("Lemmatization finished")
+        f.close()
+    print("Printing finished...")
 
 
 def print_v2_docs(categories):
     i = 0
     removed = 0
-    underline = 0
+    print("Printing docs...")
     while i < len(categories):
         with open('../assets/20newsgroups/test2/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
             lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
@@ -74,10 +90,12 @@ def print_v2_docs(categories):
             j = 0
             while j < len(lines):
                 lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
                 lines[j] = lines[j].strip() + "\n"
                 size = len(lines[j])
-                lines[j] = lines[j][1:size]
-                if len(lines[j]) > 3:
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4:
                     f.write(lines[j])
                 else:
                     removed += 1
@@ -89,18 +107,20 @@ def print_v2_docs(categories):
             j = 0
             while j < len(lines):
                 lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
                 lines[j] = lines[j].strip() + "\n"
                 size = len(lines[j])
-                lines[j] = lines[j][1:size]
-                if len(lines[j]) > 3:
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4:
                     f.write(lines[j])
                 else:
                     removed += 1
                 j += 1
             f.close()
         i += 1
+    print("Printing finished")
     print("Removed:", removed)
-    print("Underline:", underline)
 
 
 # get stopwords from file
@@ -121,7 +141,7 @@ def remove_stopwords(newsgroup):
         while i < len(words):
             j = 0
             while j < len(newsgroup.data):
-                newsgroup.data[j] = re.sub(words[i], '', newsgroup.data[j])
+                newsgroup.data[j] = re.sub(r'\b' + words[i] + '\s', ' ', newsgroup.data[j])
                 j += 1
             i += 1
     f.close()
@@ -137,7 +157,9 @@ def remove_regex_words(newsgroup):
         while i < len(words):
             j = 0
             while j < len(newsgroup.data):
-                newsgroup.data[j] = re.sub(words[i], '', newsgroup.data[j])
+                newsgroup.data[j] = re.sub(r'[^\w,\']', " ",  newsgroup.data[j])  # removes special characters except '
+                newsgroup.data[j] = re.sub(r'\b' + words[i] + '\s', ' ', newsgroup.data[j])
+                newsgroup.data[j] = re.sub(r'[^\w]', " ",  newsgroup.data[j])  # removes special characters
                 j += 1
             i += 1
     f.close()
