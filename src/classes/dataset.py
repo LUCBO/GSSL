@@ -168,7 +168,7 @@ class Dataset:
 
         # Load training dataset
         for i, category in enumerate(categories):
-            file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
+            file = open('./assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
             lines = [line.rstrip('\n') for line in file]
 
             self.train['data'].extend(lines)
@@ -178,7 +178,7 @@ class Dataset:
 
         # Load testing dataset
         for i, category in enumerate(categories):
-            file = open('../assets/20newsgroups/test2/newsgroups_test_' + category + '.txt')
+            file = open('./assets/20newsgroups/test2/newsgroups_test_' + category + '.txt')
             lines = [line.rstrip('\n') for line in file]
 
             self.test['data'].extend(lines)
@@ -189,7 +189,7 @@ class Dataset:
         print('Load completed!')
 
     def load_train_for_split(self, category, target):
-        file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
+        file = open('./assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
         lines = [line.rstrip('\n') for line in file]
         newsgroup_train = []
         i = 0

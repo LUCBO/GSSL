@@ -1,8 +1,8 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.semi_supervised import LabelPropagation
+from src.classes import LabelPropagation
 from sklearn.semi_supervised import LabelSpreading
 from sklearn import metrics
-from src.classes.dataset import Dataset
+from src.classes import Dataset
 from src.functions.Preprocess import get_stopwords
 from src.functions.ConfusionMatrix import plot_confusion_matrix
 import numpy as np
@@ -48,18 +48,18 @@ vectors = vectorizer.fit_transform(dataset.train['data'])
 
 # classification
 # use max_iter=10 when 20 categories
-# clf_rbf = LabelPropagation(kernel='rbf').fit(vectors.todense(), dataset.train['target'])
-clf_knn = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+clf_rbf = LabelPropagation(kernel='rbf').fit(vectors.todense(), dataset.train['target'])
+#clf_knn = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
 test_vec = vectorizer.transform(dataset.test['data'])
 
 print('----PREDICTIONS----')
 # pred_rbf = clf_rbf.predict(test_vec.todense())
-pred_knn = clf_knn.predict(test_vec.todense())
+pred_knn = clf_rbf.predict(test_vec.todense())
 
 # print('f1 score rbf: ', metrics.f1_score(dataset.test['target'], pred_rbf, average='macro'))
 # print('clf score rbf: ', clf_rbf.score(test_vec.todense(), dataset.test['target']))
 print('f1 score knn: ', metrics.f1_score(dataset.test['target'], pred_knn, average='macro'))
-print('clf score knn: ', clf_knn.score(test_vec.todense(), dataset.test['target']))
+print('clf score knn: ', clf_rbf.score(test_vec.todense(), dataset.test['target']))
 
 np.set_printoptions(precision=2)
 
