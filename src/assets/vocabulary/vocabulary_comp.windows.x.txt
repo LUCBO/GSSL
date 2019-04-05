@@ -1,0 +1,10 @@
+use
+file
+window
+program
+entry
+widget
+server
+edu
+motif
+include

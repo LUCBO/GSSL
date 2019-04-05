@@ -1,0 +1,10 @@
+image
+file
+use
+program
+edu
+graphic
+jpeg
+format
+color
+system

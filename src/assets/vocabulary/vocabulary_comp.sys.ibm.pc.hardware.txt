@@ -1,0 +1,10 @@
+drive
+scsi
+use
+card
+system
+disk
+one
+controller
+problem
+work

@@ -1,0 +1,10 @@
+game
+team
+play
+10
+hockey
+25
+go
+55
+player
+season

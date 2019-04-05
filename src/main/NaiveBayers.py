@@ -51,8 +51,9 @@ clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
 test_vec = vectorizer.transform(dataset.test['data'])
 pred = clf.predict(test_vec.todense())
 
-mean = np.mean(pred == dataset.test['target'])
-print(mean)
+print('f1 score Naive Bayes: ', metrics.f1_score(dataset.test['target'], pred, average='macro'))
+print('clf score Naive Bayes: ', clf.score(test_vec.todense(), dataset.test['target']))
+
 np.set_printoptions(precision=2)
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred, classes=categories,
