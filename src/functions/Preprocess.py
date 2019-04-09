@@ -4,6 +4,9 @@ from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 import string
 from sklearn.datasets import fetch_20newsgroups
+from src.classes import Dataset
+from sklearn.feature_extraction.text import CountVectorizer
+import src.functions.Vocabulary as voc
 
 
 # Preprocess the 20 Newsgroups data
@@ -81,26 +84,10 @@ def print_docs(newsgroups_train, newsgroups_test, category):
 
 def print_v2_docs(categories):
     i = 0
-    removed = 0
+    removed_train = 0
+    removed_test = 0
     print("Printing docs...")
     while i < len(categories):
-        with open('../assets/20newsgroups/test2/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
-            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
-                                                        + categories[i] + '.txt')]
-            j = 0
-            while j < len(lines):
-                lines[j] = re.sub(r'[^\w]', " ", lines[j])
-                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
-                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
-                lines[j] = lines[j].strip() + "\n"
-                size = len(lines[j])
-                # lines[j] = lines[j][1:size]
-                if len(lines[j]) > 4:
-                    f.write(lines[j])
-                else:
-                    removed += 1
-                j += 1
-            f.close()
         with open('../assets/20newsgroups/train2/newsgroups_train_' + categories[i] + '.txt', 'w') as f:
             lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
                                                         + categories[i] + '.txt')]
@@ -115,13 +102,96 @@ def print_v2_docs(categories):
                 if len(lines[j]) > 4:
                     f.write(lines[j])
                 else:
-                    removed += 1
+                    removed_train += 1
+                j += 1
+            f.close()
+        with open('../assets/20newsgroups/test2/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            dataset = Dataset(categories)
+            vectorizer = CountVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+            vectors = vectorizer.fit_transform(dataset.train['data'])
+            vocabulary = vectorizer.vocabulary_
+            while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
+                lines[j] = lines[j].strip() + "\n"
+                remove_doc = 1
+                words = lines[j].split()
+                for word in words:
+                    if word in vocabulary.keys():
+                        remove_doc = 0
+                        break
+                size = len(lines[j])
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4 and not remove_doc:
+                    f.write(lines[j])
+                else:
+                    removed_test += 1
                 j += 1
             f.close()
         i += 1
     print("Printing finished")
-    print("Removed:", removed)
+    print("Removed training doc:", removed_train)
+    print("Removed testing doc:", removed_test)
 
+
+def print_v2_test_docs_vocabulary(categories):
+    i = 0
+    removed_train = 0
+    removed_test = 0
+    print("Printing docs...")
+    while i < len(categories):
+        with open('../assets/20newsgroups/train2vocabulary/newsgroups_train_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
+                lines[j] = lines[j].strip() + "\n"
+                size = len(lines[j])
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4:
+                    f.write(lines[j])
+                else:
+                    removed_train += 1
+                j += 1
+            f.close()
+        with open('../assets/20newsgroups/test2vocabulary/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            dataset = Dataset(categories)
+            vectorizer = CountVectorizer(vocabulary=voc.get_vocabulary(categories))
+            vectors = vectorizer.fit_transform(dataset.train['data'])
+            vocabulary = vectorizer.vocabulary_
+            while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
+                lines[j] = lines[j].strip() + "\n"
+                remove_doc = 1
+                words = lines[j].split()
+                for word in words:
+                    if word in vocabulary.keys():
+                        remove_doc = 0
+                        break
+                size = len(lines[j])
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4 and not remove_doc:
+                    f.write(lines[j])
+                else:
+                    removed_test += 1
+                j += 1
+            f.close()
+        i += 1
+    print("Printing finished")
+    print("Removed training doc:", removed_train)
+    print("Removed testing doc:", removed_test)
 
 # get stopwords from file
 def get_stopwords():

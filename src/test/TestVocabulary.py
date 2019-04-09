@@ -1,4 +1,5 @@
 import src.functions.Vocabulary
+from src.classes import Dataset
 
 categories = ['alt.atheism',
               'comp.graphics',
@@ -25,3 +26,10 @@ src.functions.Vocabulary.create_vocabulary(categories, 10)
 voc = src.functions.Vocabulary.get_vocabulary(categories)
 print(voc)
 print(src.functions.Vocabulary.get_vocabulary(['comp.graphics']))
+dataset = Dataset(categories)
+x1 = len(dataset.test['data'])
+dataset.load_preprocessed_vocabulary_in_use(categories)
+x2 = len(dataset.test['data'])
+print("Before: " + x1.__str__())
+print("After: " + x2.__str__())
+

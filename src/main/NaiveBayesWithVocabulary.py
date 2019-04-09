@@ -6,6 +6,7 @@ from src.functions.ConfusionMatrix import plot_confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import MultinomialNB
+import src.functions.Vocabulary as voc
 
 
 # specific categories for testing (faster load time)
@@ -41,10 +42,11 @@ categories = ['alt.atheism',
 
 # initialize dataset
 dataset = Dataset(categories)
+dataset.load_preprocessed_vocabulary_in_use(categories)
 dataset.split_train_bayers(100)
 
 # feature extraction
-vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+vectorizer = TfidfVectorizer(vocabulary=voc.get_vocabulary(categories))
 vectors = vectorizer.fit_transform(dataset.train['data'])
 
 clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
