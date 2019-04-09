@@ -72,6 +72,8 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_X_y, check_is_fitted, check_array
 from sklearn.exceptions import ConvergenceWarning
 
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
                                               ClassifierMixin)):
@@ -123,6 +125,9 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
         self.alpha = alpha
 
         self.n_jobs = n_jobs
+
+        # graph parameters
+        self.colors = ['blue', 'red', 'yellow', 'pink', 'purple']
 
     def _get_kernel(self, X, y=None):
         if self.kernel == "rbf":
@@ -205,7 +210,7 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
         probabilities /= normalizer
         return probabilities
 
-    def fit(self, X, y):
+    def fit(self, X, y, draw_graph=False):
         """Fit a semi-supervised label propagation model based
 
         All the input data is provided matrix X (labeled and unlabeled)
@@ -221,6 +226,9 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
             n_labeled_samples (unlabeled points are marked as -1)
             All unlabeled samples will be transductively assigned labels
 
+        draw_graph : boolean, default = False
+            Display graph of distances and distributions
+
         Returns
         -------
         self : returns an instance of self.
@@ -231,6 +239,10 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
 
         # actual graph construction (implementations should override this)
         graph_matrix = self._build_graph()
+
+        self.graph = None
+        if draw_graph:
+            self.graph = self.draw_distance_graph(graph_matrix, y)
 
         # label construction
         # construct a categorical distribution for classification only
@@ -286,6 +298,9 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
                 # clamp
                 self.label_distributions_ = np.multiply(
                     alpha, self.label_distributions_) + y_static
+
+            if draw_graph and self.n_iter_ == 10:
+                self.draw_distributions(self.graph, self.label_distributions_)
         else:
             warnings.warn(
                 'max_iter=%d was reached without convergence.' % self.max_iter,
@@ -302,6 +317,52 @@ class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
         self.transduction_ = transduction.ravel()
         return self
 
+    def draw_distance_graph(self, graph_matrix, y):
+        """
+        Draw similarity graph
+        :param graph_matrix: Graph matrix
+        :param y:
+        :return: 
+        """
+        G = nx.Graph()
+        color_map = []
+
+        for i in range(0, 30):
+            G.add_node(i)
+            if y[i] >= 0:
+                color_map.append(self.colors[y[i]])
+            else:
+                color_map.append('black')
+            for x in range(i, 30):
+                if x != i:
+                    G.add_edge(i, x, weight=round(graph_matrix[i][x], 20))
+
+        nx.draw(G, node_color=color_map)
+        plt.show()
+
+        return G
+
+    def draw_distributions(self, G, distributions):
+        """
+        Draw graph over distributions
+        :param G: Graph
+        :param distributions: Distribution matrix
+        :return:
+        """
+        color_map = []
+        transductions = self.classes_[np.argmax(distributions[:len(G.nodes())],
+                                               axis=1)]
+
+        for transduction in transductions:
+            if transduction >= 0:
+                color_map.append(self.colors[transduction])
+            else:
+                color_map.append('black')
+
+        nx.draw(G, node_color=color_map)
+        plt.show()
+
+        return G
 
 class LabelPropagation(BaseLabelPropagation):
     """Label Propagation classifier
@@ -409,14 +470,14 @@ class LabelPropagation(BaseLabelPropagation):
             affinity_matrix /= normalizer[:, np.newaxis]
         return affinity_matrix
 
-    def fit(self, X, y):
+    def fit(self, X, y, draw_graph=False):
         if self.alpha is not None:
             warnings.warn(
                 "alpha is deprecated since 0.19 and will be removed in 0.21.",
                 DeprecationWarning
             )
             self.alpha = None
-        return super(LabelPropagation, self).fit(X, y)
+        return super(LabelPropagation, self).fit(X, y, draw_graph)
 
 
 class LabelSpreading(BaseLabelPropagation):

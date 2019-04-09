@@ -52,7 +52,7 @@ vectors_knn = vectorizer_knn.fit_transform(dataset_knn.train['data'])
 
 # classification
 # use max_iter=10 when 20 categories
-clf_rbf = LabelPropagation(kernel='rbf', gamma=5).fit(vectors_rbf.todense(), dataset_rbf.train['target'])
+clf_rbf = LabelPropagation(kernel='rbf', gamma=5).fit(vectors_rbf.todense(), dataset_rbf.train['target'], draw_graph=True)
 clf_knn = LabelSpreading(kernel='knn', n_neighbors=5).fit(vectors_knn.todense(), dataset_knn.train['target'])
 test_vec_rbf = vectorizer_rbf.transform(dataset_rbf.test['data'])
 test_vec_knn = vectorizer_knn.transform(dataset_knn.test['data'])
