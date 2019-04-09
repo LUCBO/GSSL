@@ -75,6 +75,7 @@ from sklearn.exceptions import ConvergenceWarning
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 class BaseLabelPropagation(six.with_metaclass(ABCMeta, BaseEstimator,
                                               ClassifierMixin)):
     """Base class for label propagation module.

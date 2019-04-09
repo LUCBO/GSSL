@@ -35,7 +35,7 @@ newsgroups_test = fetch_20newsgroups(subset='test',
 before = [newsgroups_train.data[0]]
 before_testdata = [newsgroups_test.data[0]]
 # src.functions.Preprocess.process(categories)  # Only first time
-# src.functions.Preprocess.print_v2_docs(categories)
+src.functions.Preprocess.print_v2_docs(categories)
 src.functions.Preprocess.print_v2_test_docs_vocabulary(categories)
 dataset = Dataset(category)
 print(before)

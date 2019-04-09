@@ -140,27 +140,9 @@ def print_v2_docs(categories):
 
 def print_v2_test_docs_vocabulary(categories):
     i = 0
-    removed_train = 0
     removed_test = 0
     print("Printing docs...")
     while i < len(categories):
-        with open('../assets/20newsgroups/train2vocabulary/newsgroups_train_' + categories[i] + '.txt', 'w') as f:
-            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/train/newsgroups_train_'
-                                                        + categories[i] + '.txt')]
-            j = 0
-            while j < len(lines):
-                lines[j] = re.sub(r'[^\w]', " ", lines[j])
-                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
-                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
-                lines[j] = lines[j].strip() + "\n"
-                size = len(lines[j])
-                # lines[j] = lines[j][1:size]
-                if len(lines[j]) > 4:
-                    f.write(lines[j])
-                else:
-                    removed_train += 1
-                j += 1
-            f.close()
         with open('../assets/20newsgroups/test2vocabulary/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
             lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
                                                         + categories[i] + '.txt')]
@@ -190,8 +172,8 @@ def print_v2_test_docs_vocabulary(categories):
             f.close()
         i += 1
     print("Printing finished")
-    print("Removed training doc:", removed_train)
     print("Removed testing doc:", removed_test)
+
 
 # get stopwords from file
 def get_stopwords():
