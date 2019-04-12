@@ -68,7 +68,7 @@ print('clf score knn: ', clf_knn.score(test_vec_knn.todense(), dataset_knn.test[
 
 np.set_printoptions(precision=2)
 
-"""
+
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset_rbf.test['target'], pred_rbf, classes=categories,
                       title='Confusion matrix (RBF), without normalization')
@@ -87,4 +87,4 @@ plot_confusion_matrix(dataset_knn.test['target'], pred_knn, classes=categories,
 plot_confusion_matrix(dataset_knn.test['target'], pred_knn, classes=categories, normalize=True,
                       title='Normalized confusion matrix (KNN)')
 plt.show()
-"""
+

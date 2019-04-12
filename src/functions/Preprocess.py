@@ -175,6 +175,43 @@ def print_v2_test_docs_vocabulary(categories):
     print("Removed testing doc:", removed_test)
 
 
+def print_v2_test_docs_vocabulary_labeled(categories):
+    i = 0
+    removed_test = 0
+    print("Printing docs...")
+    while i < len(categories):
+        with open('../assets/20newsgroups/test2vocabulary_labeled/newsgroups_test_' + categories[i] + '.txt', 'w') as f:
+            lines = [line.rstrip('\n') for line in open('../assets/20newsgroups/test/newsgroups_test_'
+                                                        + categories[i] + '.txt')]
+            j = 0
+            dataset = Dataset(categories)
+            vectorizer = CountVectorizer(vocabulary=voc.get_vocabulary_only_labeled(categories))
+            vectors = vectorizer.fit_transform(dataset.train['data'])
+            vocabulary = vectorizer.vocabulary_
+            while j < len(lines):
+                lines[j] = re.sub(r'[^\w]', " ", lines[j])
+                lines[j] = re.sub(r'\b[a-zA-Z]\b', " ", lines[j])
+                lines[j] = re.sub(r'[ \t]+', " ", lines[j])  # remove extra space or tab
+                lines[j] = lines[j].strip() + "\n"
+                remove_doc = 1
+                words = lines[j].split()
+                for word in words:
+                    if word in vocabulary.keys():
+                        remove_doc = 0
+                        break
+                size = len(lines[j])
+                # lines[j] = lines[j][1:size]
+                if len(lines[j]) > 4 and not remove_doc:
+                    f.write(lines[j])
+                else:
+                    removed_test += 1
+                j += 1
+            f.close()
+        i += 1
+    print("Printing finished")
+    print("Removed testing doc:", removed_test)
+
+
 # get stopwords from file
 def get_stopwords():
     f = open('../assets/stopwords.txt')  # https://github.com/suzanv/termprofiling/blob/master/stoplist.txt

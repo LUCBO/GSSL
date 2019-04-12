@@ -4,6 +4,7 @@ from sklearn.semi_supervised import LabelSpreading
 from sklearn import metrics
 from src.classes import Dataset
 from src.functions.Preprocess import get_stopwords
+from src.functions.Preprocess import print_v2_test_docs_vocabulary_labeled
 from src.functions.ConfusionMatrix import plot_confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,15 +42,20 @@ categories = ['alt.atheism',
 
 # initialize dataset
 dataset = Dataset(categories)
-dataset.load_preprocessed_vocabulary_in_use(categories)
+dataset.load_preprocessed(categories)
 dataset.split_train_true(100)
+print_v2_test_docs_vocabulary_labeled(categories)
+dataset.load_preprocessed_test_vocabulary_labeled_in_use(categories)
+
 dataset_knn = Dataset(categories)
 dataset_knn.load_preprocessed_vocabulary_in_use(categories)
 dataset_knn.split_train_true(100)
+print_v2_test_docs_vocabulary_labeled(categories)
+dataset_knn.load_preprocessed_test_vocabulary_labeled_in_use(categories)
 
 # feature extraction
-vectorizer_rbf = TfidfVectorizer(vocabulary=voc.get_vocabulary(categories))
-vectorizer_knn = TfidfVectorizer(vocabulary=voc.get_vocabulary(categories))
+vectorizer_rbf = TfidfVectorizer(vocabulary=voc.get_vocabulary_only_labeled(categories))
+vectorizer_knn = TfidfVectorizer(vocabulary=voc.get_vocabulary_only_labeled(categories))
 vectors = vectorizer_rbf.fit_transform(dataset.train['data'])
 vectors_knn = vectorizer_knn.fit_transform((dataset_knn.train['data']))
 
@@ -71,23 +77,23 @@ print('clf score knn: ', clf_knn.score(test_vec_knn.todense(), dataset_knn.test[
 
 np.set_printoptions(precision=2)
 
-"""
+
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred_rbf, classes=categories,
-                      title='Confusion matrix (RBF), without normalization')
+                      title='Confusion matrix (RBF with vocabulary), without normalization')
 
 # Plot normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred_rbf, classes=categories, normalize=True,
-                      title='Normalized confusion matrix (RBF)')
+                      title='Normalized confusion matrix (RBF with vocabulary)')
 plt.show()
 
 
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories,
-                      title='Confusion matrix (KNN), without normalization')
+                      title='Confusion matrix (KNN with vocabulary), without normalization')
 
 # Plot normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories, normalize=True,
-                      title='Normalized confusion matrix (KNN)')
+                      title='Normalized confusion matrix (KNN with vocabulary)')
 plt.show()
-"""
+

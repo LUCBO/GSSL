@@ -1,5 +1,6 @@
 from sklearn.datasets import fetch_20newsgroups
 import random
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class Dataset:
@@ -21,49 +22,6 @@ class Dataset:
         else:
             self.load_original(categories)
 
-    def split_train(self, category_size, shuffle=True):
-        """
-        Split training dataset into labeled and unlabeled
-        :param category_size: Integer. Number of labeled documents per category
-        :param shuffle: Boolean. True will shuffle dataset after split
-        :return:
-        """
-        dataset = {
-            'data': [],
-            'target': [],
-            'target_names': self.train['target_names']
-        }
-        target_label = 0
-        for category in self.train['target_names']:
-            fetch_dataset = fetch_20newsgroups(subset='train',
-                                               remove=('headers', 'footers', 'quotes'),
-                                               categories=[category])
-
-            # Pick random documents from category dataset into new train dataset
-            fetch_dataset_length = len(fetch_dataset.data)
-            for i in range(category_size):
-                indexes_left = (fetch_dataset_length - i) - 1
-                if indexes_left >= 0:
-                    random_index = random.randint(0, indexes_left)
-                    data = fetch_dataset.data[random_index]
-
-                    dataset['data'].append(data)
-                    dataset['target'].append(target_label)
-
-                    del fetch_dataset.data[random_index]
-                else:
-                    break
-
-            # Rest of category dataset goes into new test dataset
-            dataset['data'].extend(fetch_dataset.data)
-            dataset['target'] += [-1] * len(fetch_dataset.data)  # Set -1 (unlabeled) on rest
-            target_label += 1
-
-        if shuffle:
-            self.train = self.shuffle(dataset)
-        else:
-            self.train = dataset
-
     def split_train_true(self, category_size, shuffle=True):
         """
         Split training dataset into labeled and unlabeled
@@ -78,6 +36,11 @@ class Dataset:
         }
         target_label = 0
         for category in self.train['target_names']:
+            dataset_labeled = {
+                'data': [],
+                'target': [],
+                'target_names': self.train['target_names']
+            }
             fetch_dataset = self.load_train_for_split(category, target_label)
 
             # Pick random documents from category dataset into new train dataset
@@ -90,11 +53,13 @@ class Dataset:
 
                     dataset['data'].append(data)
                     dataset['target'].append(target_label)
+                    dataset_labeled['data'].append(data)
+                    dataset_labeled['target'].append(target_label)
 
                     del fetch_dataset[random_index]
                 else:
                     break
-
+            self.create_vocabulary_only_labeled(dataset_labeled, category, 10)
             # Rest of category dataset goes into new test dataset
             i = 0
             while i < len(fetch_dataset):
@@ -123,6 +88,11 @@ class Dataset:
         }
         target_label = 0
         for category in self.train['target_names']:
+            dataset_labeled = {
+                'data': [],
+                'target': [],
+                'target_names': self.train['target_names']
+            }
             fetch_dataset = self.load_train_for_split(category, target_label)
 
             # Pick random documents from category dataset into new train dataset
@@ -135,11 +105,13 @@ class Dataset:
 
                     dataset['data'].append(data)
                     dataset['target'].append(target_label)
+                    dataset_labeled['data'].append(data)
+                    dataset_labeled['target'].append(target_label)
 
                     del fetch_dataset[random_index]
                 else:
                     break
-
+            self.create_vocabulary_only_labeled(dataset_labeled, category, 10)
             target_label += 1
 
         if shuffle:
@@ -236,6 +208,28 @@ class Dataset:
 
         print('Load completed!')
 
+    def load_preprocessed_test_vocabulary_labeled_in_use(self, categories):
+
+        self.test = {
+            'data': [],
+            'target': [],
+            'target_names': []
+        }
+
+        print('Loading preprocessed dataset..')
+
+        # Load testing dataset
+        for i, category in enumerate(categories):
+            file = open('../assets/20newsgroups/test2vocabulary_labeled/newsgroups_test_' + category + '.txt')
+            lines = [line.rstrip('\n') for line in file]
+
+            self.test['data'].extend(lines)
+            self.test['target'] += [i] * len(lines)
+            self.test['target_names'].append(category)
+            file.close()
+
+        print('Load completed!')
+
     def load_train_for_split(self, category, target):
         file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
         lines = [line.rstrip('\n') for line in file]
@@ -270,4 +264,22 @@ class Dataset:
         }
 
         print('Load completed!')
+
+    def get_top_n_words(self, corpus, n=None):
+        vec = CountVectorizer().fit(corpus)
+        bag_of_words = vec.transform(corpus)
+        sum_words = bag_of_words.sum(axis=0)
+        words_freq = [(word, sum_words[0, idx]) for word, idx in vec.vocabulary_.items()]
+        words_freq = sorted(words_freq, key=lambda x: x[1], reverse=True)
+        return words_freq[:n]
+
+    def create_vocabulary_only_labeled(self, dataset, category, size):
+        freq_words = self.get_top_n_words(dataset['data'], size)
+        with open('../assets/vocabulary_labeled/vocabulary_' + category + '.txt', 'w') as f:
+            j = 0
+            while j < len(freq_words):
+                f.write(freq_words[j][0] + '\n')
+                j += 1
+            f.close()
+
 

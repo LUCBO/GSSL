@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import MultinomialNB
 import src.functions.Vocabulary as voc
+from src.functions.Preprocess import print_v2_test_docs_vocabulary_labeled
 
 
 # specific categories for testing (faster load time)
@@ -42,11 +43,13 @@ categories = ['alt.atheism',
 
 # initialize dataset
 dataset = Dataset(categories)
-dataset.load_preprocessed_vocabulary_in_use(categories)
+dataset.load_preprocessed(categories)
 dataset.split_train_bayers(100)
+print_v2_test_docs_vocabulary_labeled(categories)
+dataset.load_preprocessed_test_vocabulary_labeled_in_use(categories)
 
 # feature extraction
-vectorizer = TfidfVectorizer(vocabulary=voc.get_vocabulary(categories))
+vectorizer = TfidfVectorizer(vocabulary=voc.get_vocabulary_only_labeled(categories))
 vectors = vectorizer.fit_transform(dataset.train['data'])
 
 clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
@@ -59,9 +62,9 @@ print('clf score Naive Bayes: ', clf.score(test_vec.todense(), dataset.test['tar
 np.set_printoptions(precision=2)
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred, classes=categories,
-                      title='Confusion matrix (Naive Bayes), without normalization')
+                      title='Confusion matrix (Naive Bayes with vocabulary), without normalization')
 
 # Plot normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred, classes=categories, normalize=True,
-                      title='Normalized confusion matrix (Naive Bayes)')
+                      title='Normalized confusion matrix (Naive Bayes with vocabulary)')
 plt.show()

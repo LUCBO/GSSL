@@ -1,0 +1,10 @@
+gun
+people
+firearm
+state
+make
+right
+well
+say
+use
+go
