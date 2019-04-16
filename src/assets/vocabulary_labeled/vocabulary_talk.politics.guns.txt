@@ -1,10 +1,10 @@
 gun
+one
 people
-firearm
-state
-make
 right
-well
-say
+make
+like
 use
-go
+fire
+well
+know
