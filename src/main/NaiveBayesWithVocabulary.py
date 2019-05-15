@@ -51,7 +51,7 @@ dataset.load_preprocessed_test_vocabulary_labeled_in_use(categories)
 # feature extraction
 vectorizer = TfidfVectorizer(vocabulary=voc.get_vocabulary_only_labeled(categories))
 vectors = vectorizer.fit_transform(dataset.train['data'])
-
+print(len(vectorizer.vocabulary_))
 clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
 test_vec = vectorizer.transform(dataset.test['data'])
 pred = clf.predict(test_vec.todense())

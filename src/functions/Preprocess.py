@@ -37,7 +37,7 @@ def get_wordnet_pos(word):
     return tag_dict.get(tag, wordnet.NOUN)
 
 
-# Lemmatize and prints newsgroups documents to file
+# Lemmatization of text in documents
 def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
     i = 0
     lemmatizer = WordNetLemmatizer()
@@ -64,6 +64,7 @@ def lemmatize_newsgroup(newsgroups_train, newsgroups_test, category):
     print("Lemmatization finished")
 
 
+# prints the training and test documents of a category to a their respective file.
 def print_docs(newsgroups_train, newsgroups_test, category):
     i = 0
     print("Printing docs...")
@@ -82,6 +83,8 @@ def print_docs(newsgroups_train, newsgroups_test, category):
     print("Printing finished...")
 
 
+# prints a new version of the previously printed documents to a new file
+# documents without content are not printed
 def print_v2_docs(categories):
     i = 0
     removed_train = 0
@@ -138,6 +141,8 @@ def print_v2_docs(categories):
     print("Removed testing doc:", removed_test)
 
 
+# same function as print_v2_docs but prints a new version of test docs which for when the vocabulary constructed
+# using all the training documents are in use
 def print_v2_test_docs_vocabulary(categories):
     i = 0
     removed_test = 0
@@ -175,6 +180,7 @@ def print_v2_test_docs_vocabulary(categories):
     print("Removed testing doc:", removed_test)
 
 
+# same as print_v2_test_docs_vocabulary but for when the runtime vocabulary are in use
 def print_v2_test_docs_vocabulary_labeled(categories):
     i = 0
     removed_test = 0
@@ -220,7 +226,7 @@ def get_stopwords():
     return x
 
 
-# removed stopwords from newsgroup
+# removes stopwords from newsgroup
 def remove_stopwords(newsgroup):
     print("Removal in progress...")
     remove_regex_words(newsgroup)
@@ -237,7 +243,7 @@ def remove_stopwords(newsgroup):
     print("Stopwords removed")
 
 
-# remove stopwords with a ' using regex.
+# remove stopwords containing a ' using regex.
 def remove_regex_words(newsgroup):
     i = 0
     with open('../assets/stopwords_regex.txt', 'r') as f:

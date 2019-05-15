@@ -3,6 +3,7 @@ import random
 from sklearn.feature_extraction.text import CountVectorizer
 
 
+# dataset containing the data from 20 newsgroups
 class Dataset:
     def __init__(self, categories=None, preprocessed=True):
         self.train = {
@@ -22,6 +23,8 @@ class Dataset:
         else:
             self.load_original(categories)
 
+    # splits the training documents into labeled and unlabeled documents
+    # used with label propagation
     def split_train_true(self, category_size, shuffle=True):
         """
         Split training dataset into labeled and unlabeled
@@ -74,6 +77,8 @@ class Dataset:
         else:
             self.train = dataset
 
+    # splits the training documents into labeled and unlabeled documents
+    # used with naive bayes
     def split_train_bayers(self, category_size, shuffle=True):
         """
         Split training dataset into labeled and unlabeled
@@ -94,6 +99,7 @@ class Dataset:
                 'target_names': self.train['target_names']
             }
             fetch_dataset = self.load_train_for_split(category, target_label)
+            # fetch_dataset = self.load_original_train_for_split(category, target_label)
 
             # Pick random documents from category dataset into new train dataset
             fetch_dataset_length = len(fetch_dataset)
@@ -119,6 +125,7 @@ class Dataset:
         else:
             self.train = dataset
 
+    # shuffles the dataset
     def shuffle(self, dataset):
         """
         Shuffle both data and targets
@@ -135,6 +142,7 @@ class Dataset:
             'target_names': dataset['target_names']
         }
 
+    # loads preprocessed data into the dataset
     def load_preprocessed(self, categories):
         self.train = {
             'data': [],
@@ -171,6 +179,8 @@ class Dataset:
 
         print('Load completed!')
 
+    # loads preprcessed data into the dataset
+    # used with the vocabulary made using all the training documents
     def load_preprocessed_vocabulary_in_use(self, categories):
         self.train = {
             'data': [],
@@ -208,6 +218,8 @@ class Dataset:
 
         print('Load completed!')
 
+    # loads preprcessed data into the dataset
+    # used with the runtime vocabulary
     def load_preprocessed_test_vocabulary_labeled_in_use(self, categories):
 
         self.test = {
@@ -230,6 +242,7 @@ class Dataset:
 
         print('Load completed!')
 
+    # prepares the training data to be used when splitting into labeled and unlabeled
     def load_train_for_split(self, category, target):
         file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')
         lines = [line.rstrip('\n') for line in file]
@@ -242,12 +255,21 @@ class Dataset:
         file.close()
         return newsgroup_train
 
+    # prepares the original training data to be used when splitting into labeled and unlabeled
+    def load_original_train_for_split(self, category, target):
+        newsgroup_train = []
+        docs = fetch_20newsgroups(subset='train', categories=[category])
+        i = 0
+        while i < len(docs.data):
+            newsgroup_train.append([docs.data[i], target, category])
+            i += 1
+        return newsgroup_train
+
+    # loads the original 20 newsgroups documents into the dataset
     def load_original(self, categories):
         print('Loading original dataset..')
 
-        train_20newsgroups = fetch_20newsgroups(subset='train',
-                                                remove=('headers', 'footers', 'quotes'),
-                                                categories=categories)
+        train_20newsgroups = fetch_20newsgroups(subset='train', categories=categories)
         self.train = {
             'data': train_20newsgroups.data,
             'target': train_20newsgroups.target,
@@ -255,7 +277,6 @@ class Dataset:
         }
 
         train_20newsgroups = fetch_20newsgroups(subset='test',
-                                                remove=('headers', 'footers', 'quotes'),
                                                 categories=categories)
         self.test = {
             'data': train_20newsgroups.data,
@@ -265,6 +286,7 @@ class Dataset:
 
         print('Load completed!')
 
+    # fetches the most frequent words from the documents
     def get_top_n_words(self, corpus, n=None):
         vec = CountVectorizer().fit(corpus)
         bag_of_words = vec.transform(corpus)
@@ -273,6 +295,8 @@ class Dataset:
         words_freq = sorted(words_freq, key=lambda x: x[1], reverse=True)
         return words_freq[:n]
 
+    # creates a vocabulary using only the labeled training documents
+    # made during runtime
     def create_vocabulary_only_labeled(self, dataset, category, size):
         freq_words = self.get_top_n_words(dataset['data'], size)
         with open('../assets/vocabulary_labeled/vocabulary_' + category + '.txt', 'w') as f:

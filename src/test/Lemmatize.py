@@ -22,6 +22,7 @@ newsgroups_test = fetch_20newsgroups(subset='test',
 lemmatizer = WordNetLemmatizer()
 
 
+# Determines how a word shall change to convert it to its base form
 def get_wordnet_pos(word):
     tag = nltk.pos_tag([word])[0][1][0].upper()
     tag_dict = {"J": wordnet.ADJ,
@@ -31,48 +32,33 @@ def get_wordnet_pos(word):
     return tag_dict.get(tag, wordnet.NOUN)
 
 
-def lemmatize_newsgroup():
+# Lemmatize and prints newsgroups documents to file
+def lemmatize_newsgroup(train, test, category):
     i = 0
-    time_before = time.time()
-    with open('../assets/newsgroups_train.txt', 'w') as f:
-        while i < len(newsgroups_train.data):
-            newsgroups_train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
-                                                  nltk.word_tokenize(newsgroups_train.data[i]) if w not in
-                                                  string.punctuation]))
-            print(i)
-            f.write("%s\n" % newsgroups_train.data[i])
-            i += 1
-    i = 0
-    with open('../assets/newsgroups_test.txt', 'w') as f:
-        while i < len(newsgroups_test.data):
-            newsgroups_test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
-                                                 nltk.word_tokenize(newsgroups_test.data[i]) if w not in
-                                                 string.punctuation]))
-            print(i)
-            f.write("%s\n" % newsgroups_test.data[i])
-            i += 1
-    time_after = time.time()
-    print("Time:", time_after-time_before, " seconds")
-
-
-def load_improved_newsgroup():
-    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_train.txt')]
-    i = 0
-    while i < len(lines):
-        newsgroups_train.data[i] = lines[i]
+    lemmatizer = WordNetLemmatizer()
+    size = len(newsgroups_train.data)
+    print("Lemmatization in progress...")
+    print(category + " training data: ", i, "/", size)
+    while i < len(train.data):
+        train.data[i] = train.data[i].lower()
+        train.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
+                                   nltk.word_tokenize(train.data[i]) if w not in string.punctuation]))
         i += 1
-    lines = [line.rstrip('\n') for line in open('../assets/newsgroups_test.txt')]
+        print(category + " training data: ", i, "/", size)
+    size = len(test.data)
     i = 0
-    while i < len(lines):
-        newsgroups_test.data[i] = lines[i]
+    print(category + " test data: ", i, "/", size)
+    while i < len(test.data):
+        test.data[i] = test.data[i].lower()
+        test.data[i] = (" ".join([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in
+                                  nltk.word_tokenize(test.data[i]) if w not in string.punctuation]))
         i += 1
+        print(category + " test data: ", i, "/", size)
+    print("Lemmatization finished")
 
 
 text = ([newsgroups_train.data[0]])
-lemmatize_newsgroup()
+newsgroups_train.data[0] = "were, be, is, are"
+lemmatize_newsgroup(newsgroups_train, newsgroups_test, categories[0])
 print(text)
-print(newsgroups_train.data[0])
-newsgroups_train.data[0] = ''
-print(newsgroups_train.data[0])
-load_improved_newsgroup()
 print(newsgroups_train.data[0])

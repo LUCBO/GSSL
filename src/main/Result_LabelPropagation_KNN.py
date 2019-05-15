@@ -16,7 +16,7 @@ categories = ['alt.atheism',
               'talk.politics.guns']
 
 
-def run_lp_bow(nbr, str_list):
+def run_lp_bow(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -26,7 +26,7 @@ def run_lp_bow(nbr, str_list):
         vectorizer = CountVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -39,7 +39,7 @@ def run_lp_bow(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def run_lp_bow_vocabulary(nbr, str_list):
+def run_lp_bow_vocabulary(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -49,7 +49,7 @@ def run_lp_bow_vocabulary(nbr, str_list):
         vectorizer = CountVectorizer(vocabulary=Vocabulary.get_vocabulary(categories))
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -62,7 +62,7 @@ def run_lp_bow_vocabulary(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def run_lp_bow_runtime_vocabulary(nbr, str_list):
+def run_lp_bow_runtime_vocabulary(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -75,7 +75,7 @@ def run_lp_bow_runtime_vocabulary(nbr, str_list):
         vectorizer = CountVectorizer(vocabulary=Vocabulary.get_vocabulary(categories))
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -89,7 +89,7 @@ def run_lp_bow_runtime_vocabulary(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def run_lp_tfidf(nbr, str_list):
+def run_lp_tfidf(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -99,7 +99,7 @@ def run_lp_tfidf(nbr, str_list):
         vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -112,7 +112,7 @@ def run_lp_tfidf(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def run_lp_tfidf_vocabulary(nbr, str_list):
+def run_lp_tfidf_vocabulary(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -122,7 +122,7 @@ def run_lp_tfidf_vocabulary(nbr, str_list):
         vectorizer = TfidfVectorizer(vocabulary=Vocabulary.get_vocabulary(categories))
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -136,7 +136,7 @@ def run_lp_tfidf_vocabulary(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def run_lp_tfidf_runtime_vocabulary(nbr, str_list):
+def run_lp_tfidf_runtime_vocabulary(nbr, str_list, neighbors):
     i = 0
     avg_f1 = 0
     avg_accuracy = 0
@@ -149,7 +149,7 @@ def run_lp_tfidf_runtime_vocabulary(nbr, str_list):
         vectorizer = TfidfVectorizer(vocabulary=Vocabulary.get_vocabulary(categories))
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
-        clf = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors.todense(), dataset.train['target'])
+        clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
         test_vec = vectorizer.transform(dataset.test['data'])
         pred = clf.predict(test_vec.todense())
         avg_f1 += metrics.f1_score(dataset.test['target'], pred, average='macro')
@@ -163,18 +163,20 @@ def run_lp_tfidf_runtime_vocabulary(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def get_result(nbr):
+# runs all the different preprocessing and feature extraction combinations and prints the result
+def get_result(nbr_of_labeled_docs, neighbors):
     str_list = []
-    run_lp_bow(nbr, str_list)
-    run_lp_bow_vocabulary(nbr, str_list)
-    run_lp_bow_runtime_vocabulary(nbr, str_list)
-    run_lp_tfidf(nbr, str_list)
-    run_lp_tfidf_vocabulary(nbr, str_list)
-    run_lp_tfidf_runtime_vocabulary(nbr, str_list)
+    run_lp_bow(nbr_of_labeled_docs, str_list, neighbors)
+    run_lp_bow_vocabulary(nbr_of_labeled_docs, str_list, neighbors)
+    run_lp_bow_runtime_vocabulary(nbr_of_labeled_docs, str_list, neighbors)
+    run_lp_tfidf(nbr_of_labeled_docs, str_list, neighbors)
+    run_lp_tfidf_vocabulary(nbr_of_labeled_docs, str_list, neighbors)
+    run_lp_tfidf_runtime_vocabulary(nbr_of_labeled_docs, str_list, neighbors)
     x = 0
     while x < len(str_list):
         print(str_list[x])
         x += 1
 
 
-get_result(100)
+get_result(100, 10)
+

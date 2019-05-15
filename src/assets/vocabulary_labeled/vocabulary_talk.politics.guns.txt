@@ -1,10 +1,10 @@
 gun
-one
 people
-right
-make
-like
-use
-fire
+000
 well
-know
+use
+one
+fire
+say
+weapon
+make

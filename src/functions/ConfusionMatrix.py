@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
 
+# creates a confusion matrix
+# y_true: the true labels
+# y_pred: the predicted labels
+# classes: the name of the classes
 def plot_confusion_matrix(y_true, y_pred, classes,
                           normalize=False,
                           title=None,

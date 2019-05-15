@@ -40,12 +40,13 @@ categories = ['alt.atheism',
 
 
 # initialize dataset
-dataset = Dataset(categories)
+dataset = Dataset(categories, preprocessed=True)
 dataset.split_train_bayers(100)
 
 # feature extraction
 vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
 vectors = vectorizer.fit_transform(dataset.train['data'])
+print(len(vectorizer.vocabulary_))
 
 clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
 test_vec = vectorizer.transform(dataset.test['data'])

@@ -162,14 +162,15 @@ def run_naive_bayes_tfidf_runtime_vocabulary(nbr, str_list):
     print("Avg acc: " + avg_accuracy.__str__())
 
 
-def get_result(nbr):
+# runs all the different preprocessing and feature extraction combinations and prints the result
+def get_result(nbr_labeled_docs):
     str_list = []
-    run_naive_bayes_bow(nbr, str_list)
-    run_naive_bayes_bow_vocabulary(nbr, str_list)
-    run_naive_bayes_bow_runtime_vocabulary(nbr, str_list)
-    run_naive_bayes_tfidf(nbr, str_list)
-    run_naive_bayes_tfidf_vocabulary(nbr, str_list)
-    run_naive_bayes_tfidf_runtime_vocabulary(nbr, str_list)
+    run_naive_bayes_bow(nbr_labeled_docs, str_list)
+    run_naive_bayes_bow_vocabulary(nbr_labeled_docs, str_list)
+    run_naive_bayes_bow_runtime_vocabulary(nbr_labeled_docs, str_list)
+    run_naive_bayes_tfidf(nbr_labeled_docs, str_list)
+    run_naive_bayes_tfidf_vocabulary(nbr_labeled_docs, str_list)
+    run_naive_bayes_tfidf_runtime_vocabulary(nbr_labeled_docs, str_list)
     x = 0
     while x < len(str_list):
         print(str_list[x])

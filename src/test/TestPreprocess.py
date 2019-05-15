@@ -32,14 +32,14 @@ newsgroups_test = fetch_20newsgroups(subset='test',
                                      remove=('headers', 'footers', 'quotes'),
                                      categories=category)
 
-before = [newsgroups_train.data[0]]
+before = [newsgroups_train.data[11]]
 before_testdata = [newsgroups_test.data[0]]
 # src.functions.Preprocess.process(categories)  # Only first time
-src.functions.Preprocess.print_v2_docs(categories)
-src.functions.Preprocess.print_v2_test_docs_vocabulary(categories)
+# src.functions.Preprocess.print_v2_docs(categories)
+# src.functions.Preprocess.print_v2_test_docs_vocabulary(categories)
 dataset = Dataset(category)
 print(before)
-print([dataset.train['data'][0]])
+print([dataset.train['data'][11]])
 print(before_testdata)
 print([dataset.test['data'][0]])
 

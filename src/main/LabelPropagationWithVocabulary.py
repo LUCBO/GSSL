@@ -43,13 +43,13 @@ categories = ['alt.atheism',
 # initialize dataset
 dataset = Dataset(categories)
 dataset.load_preprocessed(categories)
-dataset.split_train_true(100)
+dataset.split_train_true(10)
 print_v2_test_docs_vocabulary_labeled(categories)
 dataset.load_preprocessed_test_vocabulary_labeled_in_use(categories)
 
 dataset_knn = Dataset(categories)
 dataset_knn.load_preprocessed_vocabulary_in_use(categories)
-dataset_knn.split_train_true(100)
+dataset_knn.split_train_true(10)
 print_v2_test_docs_vocabulary_labeled(categories)
 dataset_knn.load_preprocessed_test_vocabulary_labeled_in_use(categories)
 
@@ -61,8 +61,9 @@ vectors_knn = vectorizer_knn.fit_transform((dataset_knn.train['data']))
 
 # classification
 # use max_iter=10 when 20 categories
-clf_rbf = LabelPropagation(kernel='rbf', gamma=5).fit(vectors.todense(), dataset.train['target'])
-clf_knn = LabelSpreading(kernel='knn', n_neighbors=10).fit(vectors_knn.todense(), dataset_knn.train['target'])
+clf_rbf = LabelSpreading(kernel='rbf', gamma=5, max_iter=1000).fit(vectors.todense(), dataset.train['target'])
+clf_knn = LabelSpreading(kernel='knn', n_neighbors=5, max_iter=1000).fit(vectors_knn.todense(),
+                                                                         dataset_knn.train['target'])
 test_vec_rbf = vectorizer_rbf.transform(dataset.test['data'])
 test_vec_knn = vectorizer_knn.transform(dataset_knn.test['data'])
 
@@ -77,7 +78,7 @@ print('clf score knn: ', clf_knn.score(test_vec_knn.todense(), dataset_knn.test[
 
 np.set_printoptions(precision=2)
 
-
+"""
 # Plot non-normalized confusion matrix
 plot_confusion_matrix(dataset.test['target'], pred_rbf, classes=categories,
                       title='Confusion matrix (RBF with vocabulary), without normalization')
@@ -96,4 +97,4 @@ plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories,
 plot_confusion_matrix(dataset.test['target'], pred_knn, classes=categories, normalize=True,
                       title='Normalized confusion matrix (KNN with vocabulary)')
 plt.show()
-
+"""
