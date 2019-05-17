@@ -34,11 +34,10 @@ categories = ['alt.atheism',
               'talk.religion.misc']
 """
 
-categories = ['alt.atheism',
-              'comp.graphics',
-              'rec.autos',
-              'sci.space',
-              'talk.politics.guns']
+categories = ['rec.autos',
+              'rec.motorcycles',
+              'rec.sport.baseball',
+              'rec.sport.hockey']
 
 # initialize dataset
 dataset = Dataset(categories)

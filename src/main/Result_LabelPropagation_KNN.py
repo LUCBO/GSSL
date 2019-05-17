@@ -9,11 +9,10 @@ from sklearn.naive_bayes import MultinomialNB
 import src.functions.Vocabulary as Vocabulary
 from src.functions.Preprocess import print_v2_test_docs_vocabulary_labeled
 
-categories = ['alt.atheism',
-              'comp.graphics',
-              'rec.autos',
-              'sci.space',
-              'talk.politics.guns']
+categories = ['rec.autos',
+              'rec.motorcycles',
+              'rec.sport.baseball',
+              'rec.sport.hockey']
 
 
 def run_lp_bow(nbr, str_list, neighbors):
@@ -23,7 +22,7 @@ def run_lp_bow(nbr, str_list, neighbors):
     while i < 10:
         dataset = Dataset(categories)
         dataset.split_train_true(nbr)
-        vectorizer = CountVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+        vectorizer = CountVectorizer()
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
         clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])
@@ -96,7 +95,7 @@ def run_lp_tfidf(nbr, str_list, neighbors):
     while i < 10:
         dataset = Dataset(categories)
         dataset.split_train_true(nbr)
-        vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+        vectorizer = TfidfVectorizer()
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
         clf = LabelSpreading(kernel='knn', n_neighbors=neighbors).fit(vectors.todense(), dataset.train['target'])

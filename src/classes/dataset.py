@@ -242,6 +242,44 @@ class Dataset:
 
         print('Load completed!')
 
+    # loads preprcessed training data into the dataset
+    # used during preprocessing
+    def load_preprocessed_V1(self, categories):
+        self.train = {
+            'data': [],
+            'target': [],
+            'target_names': []
+        }
+        self.test = {
+            'data': [],
+            'target': [],
+            'target_names': []
+        }
+
+        print('Loading preprocessed dataset..')
+
+        # Load training dataset
+        for i, category in enumerate(categories):
+            file = open('../assets/20newsgroups/train/newsgroups_train_' + category + '.txt')
+            lines = [line.rstrip('\n') for line in file]
+
+            self.train['data'].extend(lines)
+            self.train['target'] += [i] * len(lines)
+            self.train['target_names'].append(category)
+            file.close()
+
+        # Load test dataset
+        for i, category in enumerate(categories):
+            file = open('../assets/20newsgroups/test/newsgroups_test_' + category + '.txt')
+            lines = [line.rstrip('\n') for line in file]
+
+            self.test['data'].extend(lines)
+            self.test['target'] += [i] * len(lines)
+            self.test['target_names'].append(category)
+            file.close()
+
+        print('Load completed!')
+
     # prepares the training data to be used when splitting into labeled and unlabeled
     def load_train_for_split(self, category, target):
         file = open('../assets/20newsgroups/train2/newsgroups_train_' + category + '.txt')

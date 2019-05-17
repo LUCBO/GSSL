@@ -9,11 +9,10 @@ from sklearn.naive_bayes import MultinomialNB
 import src.functions.Vocabulary as Vocabulary
 from src.functions.Preprocess import print_v2_test_docs_vocabulary_labeled
 
-categories = ['alt.atheism',
-              'comp.graphics',
-              'rec.autos',
-              'sci.space',
-              'talk.politics.guns']
+categories = ['rec.autos',
+              'rec.motorcycles',
+              'rec.sport.baseball',
+              'rec.sport.hockey']
 
 
 def run_naive_bayes_bow(nbr, str_list):
@@ -23,7 +22,7 @@ def run_naive_bayes_bow(nbr, str_list):
     while i < 10:
         dataset = Dataset(categories)
         dataset.split_train_bayers(nbr)
-        vectorizer = CountVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+        vectorizer = CountVectorizer()
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
         clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
@@ -96,7 +95,7 @@ def run_naive_bayes_tfidf(nbr, str_list):
     while i < 10:
         dataset = Dataset(categories)
         dataset.split_train_bayers(nbr)
-        vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+        vectorizer = TfidfVectorizer()
         vectors = vectorizer.fit_transform(dataset.train['data'])
 
         clf = MultinomialNB().fit(vectors.todense(), dataset.train['target'])
@@ -177,4 +176,4 @@ def get_result(nbr_labeled_docs):
         x += 1
 
 
-get_result(100)
+get_result(10)

@@ -41,10 +41,10 @@ categories = ['alt.atheism',
 
 # initialize dataset
 dataset = Dataset(categories, preprocessed=True)
-dataset.split_train_bayers(100)
+dataset.split_train_bayers(10)
 
 # feature extraction
-vectorizer = TfidfVectorizer(stop_words=get_stopwords(), max_df=0.5, min_df=10)
+vectorizer = TfidfVectorizer()
 vectors = vectorizer.fit_transform(dataset.train['data'])
 print(len(vectorizer.vocabulary_))
 

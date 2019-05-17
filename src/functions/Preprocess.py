@@ -7,6 +7,7 @@ from sklearn.datasets import fetch_20newsgroups
 from src.classes import Dataset
 from sklearn.feature_extraction.text import CountVectorizer
 import src.functions.Vocabulary as voc
+from src.classes.dataset import Dataset
 
 
 # Preprocess the 20 Newsgroups data
@@ -25,6 +26,12 @@ def process(categories):
         remove_stopwords(testdata)
         print_docs(trainingdata, testdata, categories[i])
         i += 1
+    dataset = Dataset(categories)
+    dataset.load_preprocessed_V1(categories)
+    remove_frequent_and_infrequent_words(dataset.train)
+    print_docs_reduced_feature_count(dataset, categories)
+    print_v2_docs(categories)
+    print_v2_test_docs_vocabulary(categories)
 
 
 # Determines how a word shall change to convert it to its base form
@@ -80,6 +87,38 @@ def print_docs(newsgroups_train, newsgroups_test, category):
             f.write("%s\n" % newsgroups_test.data[i].encode("utf-8"))
             i += 1
         f.close()
+    print("Printing finished...")
+
+
+# prints the training documents after frequent and infrequent words have been removed
+def print_docs_reduced_feature_count(dataset, categories):
+    print("Printing docs...")
+    i = 0
+    train_category = []
+    while i < len(categories):
+        train_category.append([])
+        i += 1
+    i = 0
+    while i < len(dataset.train['data']):
+        c = 0
+        category = dataset.train['target_names'][dataset.train['target'][i]]
+        while c < len(categories):
+            if category == categories[c]:
+                train_category[c].append(dataset.train['data'][i])
+                break
+            c += 1
+        i += 1
+    i = 0
+    print("Docs sorted")
+    while i < len(train_category):
+        if len(train_category[i]) > 1:
+            with open('../assets/20newsgroups/train/newsgroups_train_' + categories[i] + '.txt', 'w') as f:
+                j = 0
+                while j < len(train_category[i]):
+                    f.write("%s\n" % train_category[i][j])
+                    j += 1
+                f.close()
+        i += 1
     print("Printing finished...")
 
 
@@ -224,6 +263,44 @@ def get_stopwords():
     x = f.read().split("\n")
     f.close()
     return x
+
+
+# removes words with which occur in less than 10 document and more than 50%
+def remove_frequent_and_infrequent_words(newsgroup):
+    vectorizer = CountVectorizer(max_df=0.5, min_df=10)
+    vectors = vectorizer.fit_transform(newsgroup['data'])
+    vocabulary = voc.get_top_n_words(newsgroup['data'], len(vectorizer.vocabulary_))
+    vectorizer = CountVectorizer()
+    vectors = vectorizer.fit_transform(newsgroup['data'])
+    vocabulary_with_freq_and_infreq = voc.get_top_n_words(newsgroup['data'], len(vectorizer.vocabulary_))
+    i = 0
+    while i < len(vocabulary_with_freq_and_infreq):
+        vocabulary_with_freq_and_infreq[i] = vocabulary_with_freq_and_infreq[i][0]
+        if i < len(vocabulary):
+            vocabulary[i] = vocabulary[i][0]
+        i += 1
+    print(len(vocabulary))
+    print(len(vocabulary_with_freq_and_infreq))
+    i = 0
+    while i < len(vocabulary_with_freq_and_infreq):
+        j = 0
+        if vocabulary_with_freq_and_infreq[i] not in vocabulary:
+            while j < len(newsgroup['data']):
+                newsgroup['data'][j] = re.sub(r'\b' + vocabulary_with_freq_and_infreq[i] + '\s', ' ',
+                                              newsgroup['data'][j])
+                j += 1
+        i += 1
+        print("Freq/Infreq: ", i, "/", len(vocabulary_with_freq_and_infreq))
+
+
+# fetches the most frequent words from the documents
+def get_top_n_words(documents, nbr_of_top_words=None):
+    vec = CountVectorizer().fit(documents.data)
+    bag_of_words = vec.transform(documents.data)
+    sum_words = bag_of_words.sum(axis=0)
+    words_freq = [(word, sum_words[0, idx]) for word, idx in vec.vocabulary_.items()]
+    words_freq = sorted(words_freq, key=lambda x: x[1], reverse=True)
+    return words_freq[:nbr_of_top_words]
 
 
 # removes stopwords from newsgroup
