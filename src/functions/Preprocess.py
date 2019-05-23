@@ -281,16 +281,29 @@ def remove_frequent_and_infrequent_words(newsgroup):
         i += 1
     print(len(vocabulary))
     print(len(vocabulary_with_freq_and_infreq))
+    remove = []
     i = 0
     while i < len(vocabulary_with_freq_and_infreq):
-        j = 0
         if vocabulary_with_freq_and_infreq[i] not in vocabulary:
+            remove.append(vocabulary_with_freq_and_infreq[i])
+        i += 1
+    remove = "|".join(remove)
+    i = 0
+    while i < len(newsgroup['data']):
+        newsgroup['data'][i] = re.sub(r'\b(' + remove + ')\s', ' ', newsgroup['data'][i])
+        i += 1
+        print("Document: ", i,  "/", len(newsgroup['data']))
+    """
+    while i < len(vocabulary_with_freq_and_infreq):
+       j = 0
+       if vocabulary_with_freq_and_infreq[i] not in vocabulary:
             while j < len(newsgroup['data']):
                 newsgroup['data'][j] = re.sub(r'\b' + vocabulary_with_freq_and_infreq[i] + '\s', ' ',
                                               newsgroup['data'][j])
                 j += 1
         i += 1
         print("Freq/Infreq: ", i, "/", len(vocabulary_with_freq_and_infreq))
+    """
 
 
 # fetches the most frequent words from the documents
